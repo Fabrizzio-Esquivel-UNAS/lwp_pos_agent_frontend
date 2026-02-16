@@ -1,9 +1,13 @@
 // === MODULE: Bridge Mode ===
 // Maneja el modo puente (bridge) para conectar con nodos maestros
 
-async function toggleBridge(enable) {
+import { API_URL } from './config.js';
+import { log } from './logger.js';
+import { verificarEstado } from './agent.js';
+
+export async function toggleBridge(enable) {
     if (!API_URL) return;
-    
+
     const bridgeInput = document.getElementById('bridge-url');
     let targetUrl = null;
 

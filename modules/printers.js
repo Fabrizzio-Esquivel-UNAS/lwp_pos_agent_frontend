@@ -1,7 +1,11 @@
 // === MODULE: Printer Management ===
 // Gestiona la lista de impresoras, escaneo y operaciones CRUD
 
-async function listarImpresoras() {
+import { API_URL, currentPlatform } from './config.js';
+import { log } from './logger.js';
+import { mostrarModalRegistro, cerrarModal } from './uiHelpers.js';
+
+export async function listarImpresoras() {
     const container = document.getElementById('printer-list-container');
     const select = document.getElementById('printer-select');
 
@@ -66,6 +70,7 @@ function renderPrinterList(printers) {
         return;
     }
 
+    // currentPlatform imported from config.js
     const isMobile = currentPlatform === 'android' || currentPlatform === 'ios';
 
     printers.forEach(p => {
@@ -74,6 +79,12 @@ function renderPrinterList(printers) {
 
         let badgesHtml = `<span class="badge badge-${p.type === 'NETWORK' ? 'network' : (p.type === 'BLUETOOTH' ? 'bt' : 'driver')}">${p.type}</span>`;
         if (p.isDefault) badgesHtml += ` <span class="badge badge-default">DEFAULT</span>`;
+
+        // Note: onclick handlers in HTML string won't see imported functions. 
+        // We need to attach them globally or use event listeners.
+        // For now, I'll rely on global exposure in init.js or attach them here if possible, 
+        // but since it's innerHTML string, it expects global functions.
+        // I will assume these functions are exposed globally in init.js.
 
         let actionsHtml = `
             <div class="actions-row">
@@ -117,7 +128,7 @@ function renderPrinterSelect(printers, currentVal) {
     }
 }
 
-async function setPredeterminada(name) {
+export async function setPredeterminada(name) {
     log(`Estableciendo '${name}' como default...`);
     try {
         const res = await fetch(`${API_URL}/printers/default`, {
@@ -137,7 +148,7 @@ async function setPredeterminada(name) {
     }
 }
 
-async function verificarImpresora(name) {
+export async function verificarImpresora(name) {
     log(`Verificando estado de '${name}'...`);
     try {
         const res = await fetch(`${API_URL}/printers/${name}`);
@@ -196,9 +207,6 @@ async function verificarImpresora(name) {
 }
 
 function updatePrinterStatusInList(printer) {
-    // Attempt to find the printer card in the DOM and update status
-    // This assumes the printer names are unique and rendered.
-    // Finding by text content is fragile, ideally we should have IDs, but this fits the current 'dummy' structure.
     const cards = document.querySelectorAll('.printer-card');
     for (const card of cards) {
         const title = card.querySelector('h3');
@@ -206,14 +214,13 @@ function updatePrinterStatusInList(printer) {
             const statusSpan = card.querySelector('.printer-status');
             if (statusSpan) {
                 statusSpan.innerText = printer.status;
-                // Optional: Add visual cue or color change based on status
             }
             break;
         }
     }
 }
 
-async function escanear(type = '') {
+export async function escanear(type = '') {
     const resultsDiv = document.getElementById('scan-results');
     const statusDiv = document.getElementById('scan-status');
     statusDiv.innerText = `Escaneando ${type || 'todos los dispositivos'}... por favor espere.`;
@@ -262,6 +269,7 @@ async function escanear(type = '') {
 
                         const item = document.createElement('div');
                         item.className = 'scan-item';
+                        // Using arrow function here works because prellenarModal is in scope (defined below)
                         item.onclick = () => prellenarModal(dev.model || 'Desconocido', dev.type, dev.address);
                         item.innerHTML = `
                             <div>
@@ -291,7 +299,7 @@ function prellenarModal(name, type, address) {
     mostrarModalRegistro();
 }
 
-async function guardarImpresora() {
+export async function guardarImpresora() {
     const name = document.getElementById('reg-name').value;
     const type = document.getElementById('reg-type').value;
     const address = document.getElementById('reg-address').value;
@@ -326,7 +334,7 @@ async function guardarImpresora() {
     }
 }
 
-async function eliminarImpresora(name) {
+export async function eliminarImpresora(name) {
     if (!confirm(`¿Seguro que desea eliminar la impresora '${name}'?`)) return;
 
     try {

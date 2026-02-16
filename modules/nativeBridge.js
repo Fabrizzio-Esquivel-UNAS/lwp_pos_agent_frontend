@@ -1,7 +1,10 @@
 // === MODULE: Native Bridge ===
 // Maneja la comunicación con el bridge nativo en plataformas móviles
 
-function checkNativeBridge() {
+import { log } from './logger.js';
+import { conectarAgent } from './agent.js'; // Helper to avoid circular dependency might be needed, or refactor agent.js first.
+
+export function checkNativeBridge() {
     // Verificar si existe el objeto inyectado por el WebView
     if (window.NativeAgent) {
         const btnContainer = document.getElementById('mobile-start-container');
@@ -18,24 +21,24 @@ window.addEventListener('NativeAgentReady', () => {
     checkNativeBridge();
 });
 
-async function iniciarAgenteMovil() {
+export async function iniciarAgenteMovil() {
     if (!window.NativeAgent) {
         alert("Error crítico: No se detectó el Bridge Nativo (window.NativeAgent).");
         return;
     }
 
     log("📡 Solicitando inicio del Servidor Local en el dispositivo...", 'info');
-    
+
     try {
         // Llamada al Native Bridge (Dart/Flutter)
         const respuestaBridge = await window.NativeAgent.start();
-        
+
         console.log("Respuesta Bridge:", respuestaBridge);
 
         if (respuestaBridge.success) {
             const mobileUrl = respuestaBridge.url;
             log(`✅ Agente Móvil iniciado correctamente en ${mobileUrl}`, 'success');
-            
+
             // Actualizar el input y conectar
             document.getElementById('server-url').value = mobileUrl;
             conectarAgent();

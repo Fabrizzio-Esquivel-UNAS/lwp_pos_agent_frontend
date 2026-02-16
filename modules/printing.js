@@ -1,56 +1,56 @@
 // === MODULE: Printing & Preview ===
 // Maneja solicitudes de impresión, vista previa y carga de plantillas
 
-async function handleRequestTypeChange() {
-    const select = document.getElementById('request-select');
-    const customContainer = document.getElementById('custom-json-container');
+import { API_URL, DEFAULT_CUSTOM_TEMPLATE } from './config.js';
+import { log } from './logger.js';
+
+// Pre-fill custom text area on load
+export function initializeCustomTemplate() {
     const customText = document.getElementById('custom-json-text');
 
-    if (select.value === 'custom') {
-        customContainer.classList.remove('hidden');
-        if (!customText.value.trim()) {
-            try {
-                const itemPath = REQUEST_FILES['custom'];
-                const response = await fetch(itemPath);
-                if (response.ok) {
-                    const data = await response.json();
-                    customText.value = JSON.stringify(data, null, 2);
-                }
-            } catch (e) {
-                log("Error cargando plantilla personalizada por defecto", 'error');
-            }
+    if (customText && !customText.value.trim()) {
+        customText.value = JSON.stringify(DEFAULT_CUSTOM_TEMPLATE, null, 2);
+    }
+}
+
+export function toggleCustomJsonVisibility() {
+    console.log("toggleCustomJsonVisibility called");
+    const container = document.getElementById('custom-json-container');
+    const btn = document.getElementById('btn-toggle-json');
+
+    if (container) {
+        const isHidden = container.classList.toggle('hidden');
+        if (btn) {
+            btn.innerText = isHidden ? '👁️ Mostrar JSON' : '👁️ Ocultar JSON';
         }
     } else {
-        customContainer.classList.add('hidden');
+        console.error("Custom JSON container not found!");
+    }
+}
+
+export function togglePrinterSelection() {
+    const container = document.getElementById('printer-selection-container');
+    const statusText = document.getElementById('printer-status-text');
+
+    if (container) {
+        const isHidden = container.classList.toggle('hidden');
+        if (statusText) {
+            statusText.style.display = isHidden ? 'block' : 'none';
+        }
     }
 }
 
 async function getPayload() {
-    const type = document.getElementById('request-select').value;
-
-    if (type === 'custom') {
-        const text = document.getElementById('custom-json-text').value;
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            log("❌ JSON inválido en área de texto.", 'error');
-            throw e;
-        }
-    } else {
-        const itemPath = REQUEST_FILES[type];
-        if (!itemPath) {
-            log(`No existe mapeo para '${type}'`, 'error');
-            throw new Error(`Invalid type: ${type}`);
-        }
-
-        log(`Cargando plantilla ${type}...`);
-        const response = await fetch(itemPath);
-        if (!response.ok) throw new Error("Error cargando archivo local");
-        return await response.json();
+    const customText = document.getElementById('custom-json-text');
+    try {
+        return JSON.parse(customText.value);
+    } catch (e) {
+        log("❌ JSON inválido en área de texto.", 'error');
+        throw e;
     }
 }
 
-async function ejecutarImpresion() {
+export async function ejecutarImpresion() {
     const printerSelect = document.getElementById('printer-select');
     const printerName = printerSelect.value;
 
@@ -88,7 +88,7 @@ async function ejecutarImpresion() {
     }
 }
 
-async function generarVistaPrevia() {
+export async function generarVistaPrevia() {
     let payload;
     try {
         payload = await getPayload();
