@@ -13,64 +13,106 @@
         <header style="flex-direction: column; align-items: flex-start; gap: 10px;">
             <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                 <h1>Administrador de Agente POS LWP</h1>
-                <div id="status-container" class="status-offline">
-                    <span id="status-indicator">●</span>
-                    <span id="status-text">Desconectado</span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div id="status-container" class="status-offline">
+                        <span id="status-indicator">●</span>
+                        <span id="status-text">Desconectado</span>
+                    </div>
+                    <button id="btn-settings" onclick="toggleConnectionSettings()" class="secondary-btn btn-sm"
+                        style="background: #e2e8f0; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        ⚙️ <span class="hide-mobile">Ajustes</span>
+                    </button>
                 </div>
-            </div>
-
-            <div class="server-config"
-                style="display: flex; gap: 10px; width: 100%; background: #f1f5f9; padding: 10px; border-radius: 6px; box-sizing: border-box; align-items: center; flex-wrap: wrap;">
-                <label for="server-url" style="font-weight: 600; font-size: 0.9rem; color: #475569;">Agente URL:</label>
-                <input type="text" id="server-url" value="http://localhost:5050" placeholder="http://ip:port"
-                    style="flex: 1; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; min-width: 150px;">
-                <button id="btn-retry-connect" onclick="conectarAgent()" class="primary-btn btn-sm hidden"
-                    style="background-color: #ef4444; color: white;">Reintentar</button>
-                <div id="mobile-start-container"
-                    style="display: none; border-left: 1px solid #cbd5e1; padding-left: 10px;">
-                    <button onclick="iniciarAgenteMovil()" class="secondary-btn btn-sm"
-                        style="background-color: #f59e0b; color: white;">⚡ Iniciar Agente</button>
-                </div>
-            </div>
-
-            <div id="bridge-config-container" class="hidden"
-                style="margin-top: 10px; width: 100%; background: #eff6ff; padding: 10px; border-radius: 6px; border: 1px solid #bfdbfe; box-sizing: border-box; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <label for="bridge-url" style="font-weight: 600; font-size: 0.9rem; color: #1e40af;">🔗 Modo
-                    Puente:</label>
-                <input type="text" id="bridge-url" placeholder="URL Nodo Maestro (http://ip:port)"
-                    style="flex: 1; padding: 6px; border: 1px solid #bfdbfe; border-radius: 4px; min-width: 150px;">
-                <button id="btn-bridge" class="primary-btn btn-sm"
-                    style="background-color: #2563eb; color: white;">Activar</button>
-                <span id="bridge-status-badge"
-                    style="display:none; font-size: 0.75rem; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid #86efac;">EN
-                    PUENTE</span>
-            </div>
         </header>
+
+        <!-- Connection Settings Floating Window -->
+        <div id="connection-settings-container" class="hidden floating-window">
+            <div class="window-header" id="connection-window-header">
+                <h4>⚙️ Configuración de Conexión</h4>
+                <button onclick="toggleConnectionSettings()" class="btn-close-window">×</button>
+            </div>
+            <div class="window-content">
+                <div class="server-config"
+                    style="display: flex; flex-direction: column; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 6px; box-sizing: border-box;">
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="server-url" style="font-weight: 600; font-size: 0.9rem; color: #475569;">Agente
+                            URL:</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="server-url" value="http://localhost:5050"
+                                placeholder="http://ip:port"
+                                style="flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                            <button id="btn-retry-connect" onclick="conectarAgent()" class="primary-btn btn-sm hidden"
+                                style="background-color: #ef4444; color: white;">Reintentar</button>
+                        </div>
+                    </div>
+
+                    <div id="mobile-start-container"
+                        style="display: none; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                        <button onclick="iniciarAgenteMovil()" class="secondary-btn"
+                            style="background-color: #f59e0b; color: white; width: 100%;">⚡ Iniciar Agente
+                            Local</button>
+                    </div>
+
+                    <div id="bridge-config-container"
+                        style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; flex-direction: column; gap: 10px; position: relative;">
+
+                        <!-- Overlay for Offline State -->
+                        <div id="bridge-offline-overlay" class="bridge-overlay hidden">
+                            <div class="bridge-overlay-message">
+                                <p>Agente desconectado</p>
+                                <small>Funcionalidad no disponible</small>
+                            </div>
+                        </div>
+
+                        <label for="bridge-url" style="font-weight: 600; font-size: 0.9rem; color: #1e40af;">🔗 Modo
+                            Puente:</label>
+
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="bridge-url" placeholder="URL Nodo Maestro (http://ip:port)"
+                                style="flex: 1; padding: 8px; border: 1px solid #bfdbfe; border-radius: 4px;">
+                            <button id="btn-bridge" class="primary-btn btn-sm"
+                                style="background-color: #2563eb; color: white;">Activar</button>
+                        </div>
+                        <span id="bridge-status-badge"
+                            style="display:none; text-align: center; font-size: 0.75rem; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid #86efac;">EN
+                            PUENTE</span>
+                    </div>
+                    <div style="margin-top: 5px; text-align: center;">
+                        <button onclick="toggleConnectionSettings()" class="secondary-btn btn-sm"
+                            style="width: 100%;">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <div class="main-content-grid">
             <!-- Management Section -->
-            <section class="config-section"
-                style="margin-bottom: 0; background: #fff; display: flex; flex-direction: column;">
+            <section class="config-section">
                 <div
                     style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap: nowrap; gap: 10px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <h3 style="margin:0; color: #1e293b; font-size: 1.2rem;">Dispositivos</h3>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button onclick="listarImpresoras()" class="secondary-btn btn-sm">🔄 Actualizar</button>
+                        <button id="btn-refresh-printers" onclick="listarImpresoras()" class="secondary-btn btn-sm">🔄
+                            Actualizar</button>
                         <button onclick="mostrarModalRegistro()" class="secondary-btn btn-sm">➕ Agregar por IP</button>
-                        <button onclick="iniciarEscaneo()" class="secondary-btn btn-sm">🔍 Escanear Red</button>
+                        <button id="btn-scan-network" onclick="iniciarEscaneo()" class="secondary-btn btn-sm">🔍
+                            Escanear Red</button>
                     </div>
                 </div>
 
-                <div id="printer-management-content" style="flex: 1; display: flex; flex-direction: column;">
+                <div id="printer-management-content"
+                    style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
                     <!-- Scan Area (Mobile) -->
                     <div id="scan-area" class="hidden"
                         style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; background: #f8fafc;">
-                        <h4 style="margin-top:0; color:#475569;">Escanear Dispositivos</h4>
-                        <div style="display:flex; justify-content: flex-end; margin-bottom:10px;">
+                        <div
+                            style="display:flex; justify-content: space-between; align-items: center; margin-bottom:10px;">
+                            <h4 style="margin:0; color:#475569;">Escanear Dispositivos</h4>
                             <button onclick="toggleScan()"
-                                style="color:#ef4444; border:none; background:none; cursor:pointer; font-weight:bold;">Cerrar
+                                style="color:#ef4444; border:none; background:none; cursor:pointer; font-weight:bold; padding: 0;">Cerrar
                                 ✖</button>
                         </div>
                         <div id="scan-status"
@@ -80,7 +122,7 @@
                     </div>
 
                     <!-- Printer List -->
-                    <div id="printer-list-container" class="horizontal-scroll sub-section-box" style="flex: 1;">
+                    <div id="printer-list-container" class="vertical-device-list sub-section-box" style="flex: 1;">
                         <div
                             style="background: white; padding: 20px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; color: #64748b;">
                             <p style="margin: 0; font-weight: bold;">⏳ Cargando...</p>
@@ -92,37 +134,46 @@
 
             <!-- Printing & Preview Section -->
             <!-- Merged Content & Print Section -->
-            <div class="config-section" style="margin-bottom: 0; background: #fff;">
+            <div class="config-section">
                 <!-- Header -->
                 <div
                     style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap: nowrap; gap: 10px;">
-                    <h3 style="margin:0; color: #1e293b; font-size: 1.2rem;">Ticket de Demostración</h3>
+                    <h3 style="margin:0; color: #1e293b; font-size: 1.2rem;">Demostración</h3>
                     <div style="display: flex; gap: 8px;">
                         <button id="btn-toggle-json" onclick="toggleCustomJsonVisibility()"
                             class="secondary-btn btn-sm">👁️
                             Mostrar JSON</button>
-                        <button onclick="generarVistaPrevia()" class="secondary-btn btn-sm"
+                        <button id="btn-refresh-preview" onclick="generarVistaPrevia()" class="secondary-btn btn-sm"
                             style="background-color: #64748b; color: white;">🔄 Actualizar</button>
                     </div>
                 </div>
 
                 <!-- Custom JSON Container -->
-                <div id="custom-json-container" class="hidden" style="margin-bottom: 20px;">
-                    <label for="custom-json-text"
-                        style="display:block; margin-bottom:5px; font-size:0.85rem; color:#64748b;">Edite el JSON para
-                        personalizar la impresión:</label>
-                    <textarea id="custom-json-text" rows="15"
-                        style="width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; padding: 8px; box-sizing: border-box;"></textarea>
+                <div id="custom-json-container" class="hidden floating-window">
+                    <div class="window-header" id="json-window-header">
+                        <h4>🔧 Editor de JSON</h4>
+                        <button onclick="toggleCustomJsonVisibility()" class="btn-close-window">×</button>
+                    </div>
+                    <div class="window-content">
+                        <label for="custom-json-text"
+                            style="display:block; margin-bottom:10px; font-size:0.85rem; color:#64748b;">Edite el JSON
+                            para personalizar la impresión:</label>
+                        <textarea id="custom-json-text" rows="15"
+                            style="width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; padding: 10px; box-sizing: border-box; resize: both;"></textarea>
+                    </div>
                 </div>
 
-                <!-- Preview Container -->
                 <div id="preview-container" class="hidden sub-section-box" style="margin-bottom: 20px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <div
+                        style="display:flex; justify-content:space-between; margin-bottom:10px; align-items: center; padding: 10px 15px 0 15px;">
                         <strong style="color: #334155;">Vista Previa:</strong>
-                        <button onclick="document.getElementById('preview-container').classList.add('hidden')"
-                            style="background:none; border:none; cursor:pointer; font-size: 1.2rem; color: #64748b;">×</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="document.getElementById('preview-container').classList.add('hidden')"
+                                style="background:none; border:none; cursor:pointer; font-size: 1.2rem; color: #64748b; line-height: 1; padding: 0;">×</button>
+                        </div>
                     </div>
-                    <div id="preview-image-placeholder" style="overflow: auto; text-align: center;"></div>
+                    <div id="preview-image-placeholder" class="preview-limited"
+                        style="overflow-x: auto; text-align: center; padding: 10px;"></div>
                 </div>
 
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
@@ -132,7 +183,7 @@
                     <div
                         style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
                         <!-- Status Column -->
-                        <div id="printer-status-text" style="flex: 1; min-width: 200px;">
+                        <div id="printer-status-text" style="flex: 1;">
                             <span style="color: #64748b; font-size: 0.9rem;">ℹ️ Se usará la impresora
                                 predeterminada.</span>
                         </div>
@@ -148,10 +199,11 @@
                         <!-- Buttons Column -->
                         <div style="display: flex; gap: 8px; align-items: center;">
                             <button onclick="togglePrinterSelection()" class="secondary-btn btn-sm"
-                                style="font-size: 0.8rem; height: 38px;" title="Cambiar impresora">⚙️ Cambiar</button>
+                                style="font-size: 0.8rem; height: 38px;" title="Cambiar impresora">⚙️
+                                Cambiar</button>
                             <button onclick="ejecutarImpresion()" class="primary-btn"
                                 style="height: 38px; padding: 0 20px; background-color: var(--primary-color); color: white; font-size: 0.95rem; font-weight: bold; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">🖨️
-                                IMPRIMIR TICKET</button>
+                                IMPRIMIR</button>
                         </div>
                     </div>
                 </div>

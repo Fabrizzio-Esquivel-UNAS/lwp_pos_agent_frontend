@@ -4,7 +4,7 @@
 import { log } from './logger.js';
 import { checkNativeBridge, iniciarAgenteMovil } from './nativeBridge.js';
 import { conectarAgent } from './agent.js';
-import { toggleSection, toggleScan, iniciarEscaneo, mostrarModalRegistro, cerrarModal } from './uiHelpers.js';
+import { toggleSection, toggleScan, iniciarEscaneo, mostrarModalRegistro, cerrarModal, toggleConnectionSettings } from './uiHelpers.js';
 import { listarImpresoras, guardarImpresora, setPredeterminada, verificarImpresora, eliminarImpresora } from './printers.js';
 import { ejecutarImpresion, generarVistaPrevia, initializeCustomTemplate, toggleCustomJsonVisibility, togglePrinterSelection } from './printing.js';
 
@@ -13,6 +13,7 @@ window.conectarAgent = conectarAgent;
 window.iniciarAgenteMovil = iniciarAgenteMovil;
 window.toggleSection = toggleSection;
 window.toggleScan = toggleScan;
+window.toggleConnectionSettings = toggleConnectionSettings;
 window.iniciarEscaneo = iniciarEscaneo;
 window.mostrarModalRegistro = mostrarModalRegistro;
 window.cerrarModal = cerrarModal;

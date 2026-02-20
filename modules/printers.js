@@ -12,6 +12,12 @@ export async function listarImpresoras() {
     const currentSelection = select.value;
     const printers = [];
 
+    const btnRefresh = document.getElementById('btn-refresh-printers');
+    if (btnRefresh) {
+        btnRefresh.disabled = true;
+        btnRefresh.classList.add('btn-loading');
+    }
+
     container.innerHTML = `
         <div style="background: white; padding: 20px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; color: #64748b;">
             <p style="margin: 0; font-weight: bold;">⏳ Buscando impresoras...</p>
@@ -70,6 +76,11 @@ export async function listarImpresoras() {
                 <p style="margin: 0; font-weight: bold;">Error de conexión</p>
                 <p style="margin: 5px 0 0 0; font-size: 0.8rem;">${e.message}</p>
             </div>`;
+    } finally {
+        if (btnRefresh) {
+            btnRefresh.disabled = false;
+            btnRefresh.classList.remove('btn-loading');
+        }
     }
 }
 
@@ -133,7 +144,7 @@ function renderPrinterSelect(printers, currentVal) {
     printers.forEach(p => {
         const opt = document.createElement('option');
         opt.value = p.name;
-        opt.text = `${p.name} ${p.isDefault ? '(Default)' : ''}`;
+        opt.text = `${p.name} ${p.isDefault ? '(Default)' : ''} `;
         if (p.name === currentVal) opt.selected = true;
         select.appendChild(opt);
     });
@@ -147,7 +158,7 @@ function renderPrinterSelect(printers, currentVal) {
 export async function setPredeterminada(name) {
     log(`Estableciendo '${name}' como default...`);
     try {
-        const res = await fetch(`${API_URL}/printers/default`, {
+        const res = await fetch(`${API_URL} /printers/default`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ printer: name })
@@ -160,18 +171,18 @@ export async function setPredeterminada(name) {
             throw new Error(data.message);
         }
     } catch (e) {
-        log(`Error: ${e.message}`, 'error');
+        log(`Error: ${e.message} `, 'error');
     }
 }
 
 export async function verificarImpresora(name) {
     log(`Verificando estado de '${name}'...`);
     try {
-        const res = await fetch(`${API_URL}/printers/${name}`);
+        const res = await fetch(`${API_URL} /printers/${name} `);
 
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
-            throw new Error(data.message || `HTTP ${res.status}`);
+            throw new Error(data.message || `HTTP ${res.status} `);
         }
 
         const reader = res.body.getReader();
@@ -203,7 +214,7 @@ export async function verificarImpresora(name) {
                         } else if (p.status === 'OFFLINE') {
                             log(`❌ ${p.name}: OFFLINE`, 'error');
                         } else {
-                            log(`ℹ️ ${p.name}: ${p.status}`);
+                            log(`ℹ️ ${p.name}: ${p.status} `);
                         }
 
                         // DOM Update (Bonus)
@@ -218,7 +229,7 @@ export async function verificarImpresora(name) {
             }
         }
     } catch (e) {
-        log(`Error verificación: ${e.message}`, 'error');
+        log(`Error verificación: ${e.message} `, 'error');
     }
 }
 
@@ -239,8 +250,11 @@ function updatePrinterStatusInList(printer) {
 export async function escanear(type = '') {
     const resultsDiv = document.getElementById('scan-results');
     const statusDiv = document.getElementById('scan-status');
-    statusDiv.innerText = `Escaneando ${type || 'todos los dispositivos'}... por favor espere.`;
-    resultsDiv.innerHTML = '';
+    const btnScan = document.getElementById('btn-scan-network');
+    if (btnScan) {
+        btnScan.disabled = true;
+        btnScan.classList.add('btn-loading');
+    }
 
     let count = 0;
 
@@ -305,6 +319,11 @@ export async function escanear(type = '') {
         }
     } catch (e) {
         statusDiv.innerText = `Error de escaneo: ${e.message}`;
+    } finally {
+        if (btnScan) {
+            btnScan.disabled = false;
+            btnScan.classList.remove('btn-loading');
+        }
     }
 }
 

@@ -3,13 +3,20 @@
 
 import { API_URL, DEFAULT_CUSTOM_TEMPLATE } from './config.js';
 import { log } from './logger.js';
+import { makeDraggable } from './uiHelpers.js';
 
 // Pre-fill custom text area on load
 export function initializeCustomTemplate() {
     const customText = document.getElementById('custom-json-text');
+    const container = document.getElementById('custom-json-container');
+    const header = document.getElementById('json-window-header');
 
     if (customText && !customText.value.trim()) {
         customText.value = JSON.stringify(DEFAULT_CUSTOM_TEMPLATE, null, 2);
+    }
+
+    if (container && header) {
+        makeDraggable(container, header);
     }
 }
 
@@ -20,6 +27,14 @@ export function toggleCustomJsonVisibility() {
 
     if (container) {
         const isHidden = container.classList.toggle('hidden');
+
+        // If becoming visible and hasn't been moved yet, ensure it's centered
+        if (!isHidden && !container.style.top) {
+            container.style.top = '50%';
+            container.style.left = '50%';
+            container.style.transform = 'translate(-50%, -50%)';
+        }
+
         if (btn) {
             btn.innerText = isHidden ? '👁️ Mostrar JSON' : '👁️ Ocultar JSON';
         }
@@ -96,6 +111,12 @@ export async function generarVistaPrevia() {
 
     delete payload.printer;
 
+    const btnRefresh = document.getElementById('btn-refresh-preview');
+    if (btnRefresh) {
+        btnRefresh.disabled = true;
+        btnRefresh.classList.add('btn-loading');
+    }
+
     log("Solicitando vista previa...", 'info');
     mostrarPlaceholderCargando();
 
@@ -118,6 +139,11 @@ export async function generarVistaPrevia() {
         }
     } catch (e) {
         log(`Excepción preview: ${e.message}`, 'error');
+    } finally {
+        if (btnRefresh) {
+            btnRefresh.disabled = false;
+            btnRefresh.classList.remove('btn-loading');
+        }
     }
 }
 
@@ -164,5 +190,6 @@ export function mostrarPlaceholderCargando() {
         `;
     }
 }
+
 
 

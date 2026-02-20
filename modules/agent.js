@@ -58,6 +58,10 @@ export async function verificarEstado() {
             if (bridgeContainer) {
                 bridgeContainer.classList.remove('hidden');
                 bridgeContainer.style.display = 'flex';
+
+                const bridgeOverlay = document.getElementById('bridge-offline-overlay');
+                if (bridgeOverlay) bridgeOverlay.classList.add('hidden');
+
                 const bridgeInput = document.getElementById('bridge-url');
                 const bridgeBtn = document.getElementById('btn-bridge');
                 const bridgeBadge = document.getElementById('bridge-status-badge');
@@ -75,6 +79,7 @@ export async function verificarEstado() {
                     bridgeInput.disabled = false;
                     bridgeBtn.innerText = "Activar";
                     bridgeBtn.style.backgroundColor = "#2563eb";
+                    bridgeBtn.disabled = false;
                     bridgeBtn.onclick = () => toggleBridge(true);
                     bridgeBadge.style.display = 'none';
                 }
@@ -115,10 +120,19 @@ export async function verificarEstado() {
         limpiarSelectImpresoras();
         mostrarPlaceholderError();
 
+        // Show overlay instead of greying out
         const bridgeContainer = document.getElementById('bridge-config-container');
         if (bridgeContainer) {
-            bridgeContainer.classList.add('hidden');
-            bridgeContainer.style.display = 'none';
+            bridgeContainer.classList.remove('hidden');
+            bridgeContainer.style.display = 'flex';
+
+            const bridgeOverlay = document.getElementById('bridge-offline-overlay');
+            if (bridgeOverlay) bridgeOverlay.classList.remove('hidden');
+
+            const bridgeInput = document.getElementById('bridge-url');
+            const bridgeBtn = document.getElementById('btn-bridge');
+            if (bridgeInput) bridgeInput.disabled = true;
+            if (bridgeBtn) bridgeBtn.disabled = true;
         }
     }
 }
