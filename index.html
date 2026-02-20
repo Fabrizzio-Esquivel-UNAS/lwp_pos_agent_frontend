@@ -23,63 +23,64 @@
                         ⚙️ <span class="hide-mobile">Ajustes</span>
                     </button>
                 </div>
+            </div>
         </header>
 
-        <!-- Connection Settings Floating Window -->
-        <div id="connection-settings-container" class="hidden floating-window">
-            <div class="window-header" id="connection-window-header">
-                <h4>⚙️ Configuración de Conexión</h4>
-                <button onclick="toggleConnectionSettings()" class="btn-close-window">×</button>
-            </div>
-            <div class="window-content">
-                <div class="server-config"
-                    style="display: flex; flex-direction: column; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 6px; box-sizing: border-box;">
-                    <div style="display: flex; flex-direction: column; gap: 5px;">
-                        <label for="server-url" style="font-weight: 600; font-size: 0.9rem; color: #475569;">Agente
-                            URL:</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="server-url" value="http://localhost:5050"
-                                placeholder="http://ip:port"
-                                style="flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
-                            <button id="btn-retry-connect" onclick="conectarAgent()" class="primary-btn btn-sm hidden"
-                                style="background-color: #ef4444; color: white;">Reintentar</button>
-                        </div>
-                    </div>
-
-                    <div id="mobile-start-container"
-                        style="display: none; border-top: 1px solid #e2e8f0; padding-top: 10px;">
-                        <button onclick="iniciarAgenteMovil()" class="secondary-btn"
-                            style="background-color: #f59e0b; color: white; width: 100%;">⚡ Iniciar Agente
-                            Local</button>
-                    </div>
-
-                    <div id="bridge-config-container"
-                        style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; flex-direction: column; gap: 10px; position: relative;">
-
-                        <!-- Overlay for Offline State -->
-                        <div id="bridge-offline-overlay" class="bridge-overlay hidden">
-                            <div class="bridge-overlay-message">
-                                <p>Agente desconectado</p>
-                                <small>Funcionalidad no disponible</small>
+        <!-- Connection Settings Modal -->
+        <div id="connection-overlay" class="modal-overlay">
+            <div id="connection-settings-container" class="modal-content">
+                <h3 style="margin-top: 0;">⚙️ Configuración de Conexión</h3>
+                <div class="window-content" style="padding: 0;">
+                    <div class="server-config"
+                        style="display: flex; flex-direction: column; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 6px; box-sizing: border-box;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="server-url" style="font-weight: 600; font-size: 0.9rem; color: #475569;">Agente
+                                URL:</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="server-url" value="http://localhost:5050"
+                                    placeholder="http://ip:port"
+                                    style="flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                                <button id="btn-retry-connect" onclick="conectarAgent()"
+                                    class="primary-btn btn-sm hidden"
+                                    style="background-color: #ef4444; color: white;">Reintentar</button>
                             </div>
                         </div>
 
-                        <label for="bridge-url" style="font-weight: 600; font-size: 0.9rem; color: #1e40af;">🔗 Modo
-                            Puente:</label>
-
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="bridge-url" placeholder="URL Nodo Maestro (http://ip:port)"
-                                style="flex: 1; padding: 8px; border: 1px solid #bfdbfe; border-radius: 4px;">
-                            <button id="btn-bridge" class="primary-btn btn-sm"
-                                style="background-color: #2563eb; color: white;">Activar</button>
+                        <div id="mobile-start-container"
+                            style="display: none; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                            <button onclick="iniciarAgenteMovil()" class="secondary-btn"
+                                style="background-color: #f59e0b; color: white; width: 100%;">⚡ Iniciar Agente
+                                Local</button>
                         </div>
-                        <span id="bridge-status-badge"
-                            style="display:none; text-align: center; font-size: 0.75rem; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid #86efac;">EN
-                            PUENTE</span>
-                    </div>
-                    <div style="margin-top: 5px; text-align: center;">
-                        <button onclick="toggleConnectionSettings()" class="secondary-btn btn-sm"
-                            style="width: 100%;">Cerrar</button>
+
+                        <div id="bridge-config-container"
+                            style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; flex-direction: column; gap: 10px; position: relative;">
+
+                            <!-- Overlay for Offline State -->
+                            <div id="bridge-offline-overlay" class="bridge-overlay hidden">
+                                <div class="bridge-overlay-message">
+                                    <p>Agente desconectado</p>
+                                    <small>Funcionalidad no disponible</small>
+                                </div>
+                            </div>
+
+                            <label for="bridge-url" style="font-weight: 600; font-size: 0.9rem; color: #1e40af;">🔗 Modo
+                                Puente:</label>
+
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="bridge-url" placeholder="URL Nodo Maestro (http://ip:port)"
+                                    style="flex: 1; padding: 8px; border: 1px solid #bfdbfe; border-radius: 4px;">
+                                <button id="btn-bridge" class="primary-btn btn-sm"
+                                    style="background-color: #2563eb; color: white;">Activar</button>
+                            </div>
+                            <span id="bridge-status-badge"
+                                style="display:none; text-align: center; font-size: 0.75rem; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid #86efac;">EN
+                                PUENTE</span>
+                        </div>
+                        <div style="margin-top: 5px; text-align: center; display: flex; gap: 10px;">
+                            <button onclick="toggleConnectionSettings()" class="secondary-btn"
+                                style="flex: 1; padding: 10px;">Cerrar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -92,13 +93,14 @@
                 <div
                     style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap: nowrap; gap: 10px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <h3 style="margin:0; color: #1e293b; font-size: 1.2rem;">Dispositivos</h3>
+                        <h3 style="margin:0; color: #1e293b; font-size: 1.2rem;">Dispositivos e Impresoras</h3>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button id="btn-refresh-printers" onclick="listarImpresoras()" class="secondary-btn btn-sm">🔄
-                            Actualizar</button>
+                        <button id="btn-refresh-printers" title="Escanear conexiones de tipo BLE/USB"
+                            onclick="listarImpresoras()" class="secondary-btn btn-sm">🔄</button>
                         <button onclick="mostrarModalRegistro()" class="secondary-btn btn-sm">➕ Agregar por IP</button>
-                        <button id="btn-scan-network" onclick="iniciarEscaneo()" class="secondary-btn btn-sm">🔍
+                        <button id="btn-scan-network" title="Escanear conexiones de tipo Network"
+                            onclick="iniciarEscaneo()" class="secondary-btn btn-sm">🔍
                             Escanear Red</button>
                     </div>
                 </div>
@@ -138,13 +140,13 @@
                 <!-- Header -->
                 <div
                     style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap: nowrap; gap: 10px;">
-                    <h3 style="margin:0; color: #1e293b; font-size: 1.2rem;">Demostración</h3>
+                    <h3 style="margin:0; color: #1e293b; font-size: 1.2rem;">Ticket de Prueba</h3>
                     <div style="display: flex; gap: 8px;">
                         <button id="btn-toggle-json" onclick="toggleCustomJsonVisibility()"
-                            class="secondary-btn btn-sm">👁️
-                            Mostrar JSON</button>
+                            class="secondary-btn btn-sm">🔧
+                            Editar JSON</button>
                         <button id="btn-refresh-preview" onclick="generarVistaPrevia()" class="secondary-btn btn-sm"
-                            style="background-color: #64748b; color: white;">🔄 Actualizar</button>
+                            style="background-color: #64748b; color: white;">🔄</button>
                     </div>
                 </div>
 
@@ -163,20 +165,14 @@
                     </div>
                 </div>
 
-                <div id="preview-container" class="hidden sub-section-box" style="margin-bottom: 20px;">
-                    <div
-                        style="display:flex; justify-content:space-between; margin-bottom:10px; align-items: center; padding: 10px 15px 0 15px;">
-                        <strong style="color: #334155;">Vista Previa:</strong>
-                        <div style="display: flex; gap: 8px;">
-                            <button onclick="document.getElementById('preview-container').classList.add('hidden')"
-                                style="background:none; border:none; cursor:pointer; font-size: 1.2rem; color: #64748b; line-height: 1; padding: 0;">×</button>
-                        </div>
-                    </div>
+                <div id="preview-container" class="hidden sub-section-box"
+                    style="margin-bottom: 10px; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+
                     <div id="preview-image-placeholder" class="preview-limited"
-                        style="overflow-x: auto; text-align: center; padding: 10px;"></div>
+                        style="overflow-x: auto; text-align: center; padding: 10px; flex: 1;"></div>
                 </div>
 
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 10px 0;">
 
                 <!-- Print Actions -->
                 <div>
@@ -219,25 +215,18 @@
     <!-- Modal Registro -->
     <div id="modal-registro" class="modal-overlay">
         <div class="modal-content">
-            <h3 id="modal-title" style="margin-top:0">Nueva Impresora</h3>
+            <h3 id="modal-title" style="margin-top:0">➕ Nueva Impresora</h3>
             <div class="form-group">
                 <label>Nombre / Alias</label>
                 <input type="text" id="reg-name" placeholder="Ej. Cocina_Principal">
             </div>
             <div class="form-group">
-                <label>Tipo de Conexión</label>
-                <select id="reg-type">
-                    <option value="NETWORK">Red (Ethernet/WiFi)</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label>Objetivo (IP o MAC)</label>
                 <input type="text" id="reg-address" placeholder="Ej. 192.168.1.50">
-                <small style="color:#64748b; font-size:0.75rem;">IP para Red, MAC (AA:BB:CC...) para Bluetooth</small>
             </div>
             <div class="form-group" style="display:flex; gap:10px; margin-bottom:0;">
-                <button onclick="guardarImpresora()" class="primary-btn" style="flex:1;">Guardar</button>
                 <button onclick="cerrarModal()" class="secondary-btn" style="flex:1;">Cancelar</button>
+                <button onclick="guardarImpresora()" class="primary-btn" style="flex:1;">Guardar</button>
             </div>
         </div>
     </div>

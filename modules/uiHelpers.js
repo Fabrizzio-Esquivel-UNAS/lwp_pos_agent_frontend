@@ -17,18 +17,10 @@ export function toggleScan() {
 }
 
 export function toggleConnectionSettings() {
-    const container = document.getElementById('connection-settings-container');
-    if (!container) return;
+    const overlay = document.getElementById('connection-overlay');
+    if (!overlay) return;
 
-    const isHidden = container.classList.toggle('hidden');
-
-    if (!isHidden) {
-        // Inicializar arrastrabilidad la primera vez que se muestra si es necesario
-        const header = document.getElementById('connection-window-header');
-        if (header) {
-            makeDraggable(container, header);
-        }
-    }
+    overlay.classList.toggle('active');
 }
 
 // Dependencia circular potencial con printers.js si se llama a escanear
@@ -69,6 +61,16 @@ export function makeDraggable(element, handle) {
     function dragMouseDown(e) {
         e = e || window.event;
         e.preventDefault();
+
+        // Si el elemento está centrado con transform, convertir a píxeles fijos para evitar saltos
+        const rect = element.getBoundingClientRect();
+        if (!element.style.top || element.style.top === '50%' || window.getComputedStyle(element).transform !== 'none') {
+            element.style.top = rect.top + "px";
+            element.style.left = rect.left + "px";
+            element.style.transform = 'none';
+            element.style.margin = '0'; // Evitar interferencias si hay margenes
+        }
+
         // Obtener posición del ratón al inicio
         pos3 = e.clientX;
         pos4 = e.clientY;
@@ -88,8 +90,6 @@ export function makeDraggable(element, handle) {
         // Establecer la nueva posición del elemento
         element.style.top = (element.offsetTop - pos2) + "px";
         element.style.left = (element.offsetLeft - pos1) + "px";
-        // Quitar el transform si existe para evitar conflictos de posicionamiento
-        element.style.transform = 'none';
     }
 
     function closeDragElement() {

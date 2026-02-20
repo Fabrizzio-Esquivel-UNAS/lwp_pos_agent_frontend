@@ -105,7 +105,7 @@ function renderPrinterList(printers) {
         card.className = 'printer-card';
 
         let badgesHtml = `<span class="badge badge-${p.type === 'NETWORK' ? 'network' : (p.type === 'BLUETOOTH' ? 'bt' : 'driver')}">${p.type}</span>`;
-        if (p.isDefault) badgesHtml += ` <span class="badge badge-default">DEFAULT</span>`;
+        if (p.isDefault) badgesHtml += ` <span title="Impresora Predeterminada" class="badge badge-default">📌</span>`;
 
         // Note: onclick handlers in HTML string won't see imported functions. 
         // We need to attach them globally or use event listeners.
@@ -115,9 +115,9 @@ function renderPrinterList(printers) {
 
         let actionsHtml = `
             <div class="actions-row">
-                ${!p.isDefault ? `<button onclick="setPredeterminada('${p.name}')" class="secondary-btn btn-sm" title="Marcar como predeterminada">★</button>` : ''}
-                <button onclick="verificarImpresora('${p.name}')" class="secondary-btn btn-sm" title="Verificar estado">❓ Info</button>
-                ${p.type === 'NETWORK' ? `<button onclick="eliminarImpresora('${p.name}')" class="danger-btn btn-sm" title="Eliminar">🗑</button>` : ''}
+                ${!p.isDefault ? `<button onclick="setPredeterminada('${p.name}')" class="secondary-btn btn-sm" title="Marcar como predeterminada">📌</button>` : ''}
+                <button onclick="verificarImpresora('${p.name}')" class="secondary-btn btn-sm" title="Actualizar estado">🔄</button>
+                ${p.type === 'NETWORK' ? `<button onclick="eliminarImpresora('${p.name}')" class="danger-btn btn-sm" title="Eliminar">❌</button>` : ''}
             </div>
         `;
 
@@ -125,9 +125,9 @@ function renderPrinterList(printers) {
             <div class="printer-info">
                 <h3>${p.name}</h3>
                 <div class="printer-meta">
+                    <span class="printer-status">${p.status === 'ONLINE' ? '🟢' : (p.status === 'OFFLINE' ? '🔴' : (p.status || '❓'))}</span>
                     ${badgesHtml}
-                    <span>${p.address || 'N/A'}</span>
-                    <span class="printer-status">${p.status || 'UNKNOWN'}</span>
+                    <span>${p.type === 'NETWORK' ? 'IP: ' + (p.address || 'N/A') : (p.type === 'BLUETOOTH' ? 'MAC: ' + (p.address || 'N/A') : '')}</span>
                 </div>
             </div>
             ${actionsHtml}
@@ -210,9 +210,9 @@ export async function verificarImpresora(name) {
 
                         // Update UI log
                         if (p.status === 'ONLINE') {
-                            log(`✅ ${p.name}: ONLINE`, 'success');
+                            log(`✅ ${p.name}: 🟢`, 'success');
                         } else if (p.status === 'OFFLINE') {
-                            log(`❌ ${p.name}: OFFLINE`, 'error');
+                            log(`❌ ${p.name}: 🔴`, 'error');
                         } else {
                             log(`ℹ️ ${p.name}: ${p.status} `);
                         }
@@ -240,7 +240,7 @@ function updatePrinterStatusInList(printer) {
         if (title && title.innerText === printer.name) {
             const statusSpan = card.querySelector('.printer-status');
             if (statusSpan) {
-                statusSpan.innerText = printer.status;
+                statusSpan.innerText = printer.status === 'ONLINE' ? '🟢' : (printer.status === 'OFFLINE' ? '🔴' : printer.status);
             }
             break;
         }
@@ -304,7 +304,7 @@ export async function escanear(type = '') {
                         item.innerHTML = `
                             <div>
                                 <strong>${dev.model || 'Desconocido'}</strong>
-                                <small>${dev.address} ${dev.source ? `(${dev.source})` : ''}</small>
+                                <small>${dev.type === 'NETWORK' ? 'IP: ' : (dev.type === 'BLUETOOTH' ? 'MAC: ' : '')}${dev.address} ${dev.source ? `(${dev.source})` : ''}</small>
                             </div>
                             <span class="badge badge-${dev.type === 'NETWORK' ? 'network' : 'bt'}">${dev.type}</span>
                         `;
@@ -329,14 +329,13 @@ export async function escanear(type = '') {
 
 function prellenarModal(name, type, address) {
     document.getElementById('reg-name').value = name;
-    document.getElementById('reg-type').value = type;
     document.getElementById('reg-address').value = address;
     mostrarModalRegistro();
 }
 
 export async function guardarImpresora() {
     const name = document.getElementById('reg-name').value;
-    const type = document.getElementById('reg-type').value;
+    const type = 'NETWORK';
     const address = document.getElementById('reg-address').value;
 
     if (!name || !address) {

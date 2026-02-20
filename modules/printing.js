@@ -34,10 +34,6 @@ export function toggleCustomJsonVisibility() {
             container.style.left = '50%';
             container.style.transform = 'translate(-50%, -50%)';
         }
-
-        if (btn) {
-            btn.innerText = isHidden ? '👁️ Mostrar JSON' : '👁️ Ocultar JSON';
-        }
     } else {
         console.error("Custom JSON container not found!");
     }
@@ -132,10 +128,10 @@ export async function generarVistaPrevia() {
         try { data = await res.json(); } catch (e) { throw new Error(`Invalid response: ${res.status}`); }
 
         if (res.ok && data.success) {
-            log(`✅ Vista previa generada.`, 'success');
+            log(`Vista previa generada.`, 'success');
             mostrarPrevisualizacion(data.previewBase64);
         } else {
-            log(`❌ Error Vista Previa: ${data.message}`, 'error');
+            log(`Error Vista Previa: ${data.message}`, 'error');
         }
     } catch (e) {
         log(`Excepción preview: ${e.message}`, 'error');
