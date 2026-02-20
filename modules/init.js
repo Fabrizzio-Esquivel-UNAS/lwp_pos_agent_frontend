@@ -30,8 +30,8 @@ window.generarVistaPrevia = generarVistaPrevia;
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar si estamos en entorno móvil con bridge
     checkNativeBridge();
-    // No conectamos automáticamente, esperamos acción del usuario
-    log("Frontend listo. Configure la URL del agente y presione Conectar.", 'info');
+    // Intentar conectar automáticamente
+    conectarAgent();
 
     // Initialize custom template
     if (window.initializeCustomTemplate) {

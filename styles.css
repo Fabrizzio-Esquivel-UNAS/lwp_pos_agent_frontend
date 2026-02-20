@@ -7,6 +7,10 @@
     --text-color: #1f2937;
 }
 
+.hidden {
+    display: none !important;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-color);
@@ -17,12 +21,25 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     background-color: var(--card-bg);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.main-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    /* align-items: start; Removed to allow stretching */
+}
+
+@media (max-width: 768px) {
+    .main-content-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 header {
@@ -138,32 +155,246 @@ button {
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
-.restaurant { background-color: #f59e0b; }
-.note { background-color: #8b5cf6; }
-.invoice { background-color: #2563eb; }
-.receipt { background-color: #10b981; }
-
-/* Log Section */
-.log-section {
-    margin-top: 2rem;
+.restaurant {
+    background-color: #f59e0b;
 }
 
-#log-output {
-    background-color: #1e293b;
-    color: #e2e8f0;
-    padding: 1rem;
+.note {
+    background-color: #8b5cf6;
+}
+
+.invoice {
+    background-color: #2563eb;
+}
+
+.receipt {
+    background-color: #10b981;
+}
+
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background-color: #334155;
+    color: white;
+    padding: 12px 20px;
     border-radius: 8px;
-    height: 150px;
-    overflow-y: auto;
-    font-family: 'Consolas', monospace;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 0.9rem;
+    min-width: 250px;
+    max-width: 400px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
-.log-entry {
-    margin-bottom: 4px;
-    border-bottom: 1px solid #334155;
-    padding-bottom: 4px;
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
 }
-.log-success { color: #4ade80; }
-.log-error { color: #f87171; }
-.log-info { color: #60a5fa; }
+
+.toast-success {
+    background-color: #166534;
+    border-left: 4px solid #4ade80;
+}
+
+.toast-error {
+    background-color: #991b1b;
+    border-left: 4px solid #f87171;
+}
+
+.toast-warning {
+    background-color: #b45309;
+    border-left: 4px solid #fbbf24;
+}
+
+.toast-info {
+    background-color: #1e40af;
+    border-left: 4px solid #60a5fa;
+}
+
+/* Printer Cards & List */
+.printer-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 0 0 320px;
+    /* Fixed width for horizontal scroll */
+}
+
+.horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 15px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    min-height: 140px;
+    /* Ensure visibility */
+    align-items: center;
+    /* Center items vertically if container is taller */
+}
+
+/* Custom scrollbar for horizontal scroll */
+.horizontal-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.printer-info h3 {
+    margin: 0 0 5px 0;
+    color: #1e293b;
+    font-size: 1.1rem;
+}
+
+.printer-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #64748b;
+    align-items: center;
+}
+
+.badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.badge-driver {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-network {
+    background: #fae8ff;
+    color: #86198f;
+}
+
+.badge-bt {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.badge-default {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #93c5fd;
+}
+
+.actions-row {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.scan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.scan-item {
+    border: 1px dashed #cbd5e1;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scan-item:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #334155;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}

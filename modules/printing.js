@@ -97,6 +97,8 @@ export async function generarVistaPrevia() {
     delete payload.printer;
 
     log("Solicitando vista previa...", 'info');
+    mostrarPlaceholderCargando();
+
 
     try {
         const res = await fetch(`${API_URL}/preview`, {
@@ -132,3 +134,35 @@ function mostrarPrevisualizacion(base64) {
         </div>
     `;
 }
+
+export function mostrarPlaceholderError() {
+    const container = document.getElementById('preview-container');
+    const placeholder = document.getElementById('preview-image-placeholder');
+
+    if (container && placeholder) {
+        container.classList.remove('hidden');
+        placeholder.innerHTML = `
+            <div style="background: white; padding: 20px; border-radius: 4px; display: inline-block; border: 1px dashed #ef4444; color: #ef4444;">
+                <p style="margin: 0; font-weight: bold;">Vista previa no disponible</p>
+                <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Conecte el agente para ver la vista previa.</p>
+            </div>
+        `;
+    }
+}
+
+export function mostrarPlaceholderCargando() {
+    const container = document.getElementById('preview-container');
+    const placeholder = document.getElementById('preview-image-placeholder');
+
+    if (container && placeholder) {
+        container.classList.remove('hidden');
+        placeholder.innerHTML = `
+            <div style="background: white; padding: 20px; border-radius: 4px; display: inline-block; border: 1px solid #cbd5e1; color: #64748b;">
+                <p style="margin: 0; font-weight: bold;">⏳ Cargando vista previa...</p>
+                <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Por favor espere.</p>
+            </div>
+        `;
+    }
+}
+
+

@@ -1,56 +1,24 @@
 // === MODULE: Logger ===
-// Intercepta logs de consola y los muestra en la UI
+// Simplified logger that outputs to console and shows toast notifications
 
-// Export log function
+import { showToast } from './toast.js';
+
 export function log(msg, type = 'info') {
-    // Wrapper compatible
-    logToUI(msg, type, false);
-}
+    // Show toast notification
+    showToast(msg, type);
 
-function logToUI(msg, type = 'info', fromConsole = false) {
-    const logDiv = document.getElementById('log-output');
-    if (!logDiv) return;
-
-    const entry = document.createElement('div');
-    entry.className = `log-entry log-${type}`;
-    if (fromConsole) entry.style.fontStyle = 'italic';
-
-    const time = new Date().toLocaleTimeString();
-    entry.textContent = `[${time}] ${fromConsole ? '⚙ ' : ''}${msg}`;
-    if (logDiv.firstChild) {
-        logDiv.insertBefore(entry, logDiv.firstChild);
-    } else {
-        logDiv.appendChild(entry);
+    // Filter console output
+    switch (type) {
+        case 'error':
+            console.error(msg);
+            break;
+        case 'warning':
+            console.warn(msg);
+            break;
+        case 'success':
+            console.log(`%c${msg}`, 'color: green');
+            break;
+        default:
+            console.log(msg);
     }
 }
-
-// Initialize console overrides
-(function () {
-    const originalLog = console.log;
-    const originalError = console.error;
-    const originalWarn = console.warn;
-
-    function formatArgs(args) {
-        return args.map(arg => {
-            if (typeof arg === 'object') {
-                try { return JSON.stringify(arg); } catch (e) { return String(arg); }
-            }
-            return String(arg);
-        }).join(' ');
-    }
-
-    console.log = function (...args) {
-        originalLog.apply(console, args);
-        logToUI(formatArgs(args), 'info', true);
-    };
-
-    console.error = function (...args) {
-        originalError.apply(console, args);
-        logToUI(formatArgs(args), 'error', true);
-    };
-
-    console.warn = function (...args) {
-        originalWarn.apply(console, args);
-        logToUI(formatArgs(args), 'warning', true);
-    };
-})();

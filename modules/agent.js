@@ -5,6 +5,7 @@ import { API_URL, setApiUrl, currentPlatform, setCurrentPlatform } from './confi
 import { log } from './logger.js';
 import { toggleBridge } from './bridge.js';
 import { listarImpresoras } from './printers.js';
+import { generarVistaPrevia, mostrarPlaceholderError, mostrarPlaceholderCargando } from './printing.js';
 import { limpiarSelectImpresoras } from './uiHelpers.js';
 
 export async function conectarAgent() {
@@ -25,6 +26,7 @@ export async function conectarAgent() {
     setApiUrl(`${baseUrl}/api/v1`);
     log(`Intentando conectar a ${API_URL}...`);
 
+    mostrarPlaceholderCargando();
     await verificarEstado();
 }
 
@@ -83,18 +85,35 @@ export async function verificarEstado() {
 
             // Cargar impresoras
             listarImpresoras();
+
+            // Generar vista previa inicial
+            generarVistaPrevia();
+
+            // Ocultar botón de reintentar si existe
+            const retryBtn = document.getElementById('btn-retry-connect');
+            if (retryBtn) retryBtn.classList.add('hidden');
         } else {
             throw new Error("Respuesta de estado fallida");
         }
     } catch (e) {
-        statusText.innerText = "Offline";
+        statusText.innerText = "Error de conexión";
         statusContainer.className = 'status-offline';
         statusIndicator.innerText = '○';
         setCurrentPlatform('unknown');
         log("No se pudo conectar con el agente local.", 'error');
 
-        document.getElementById('printer-list-container').innerHTML = '<p style="text-align:center; color:#ef4444">Agente desconectado.</p>';
+        // Mostrar botón de reintentar
+        const retryBtn = document.getElementById('btn-retry-connect');
+        if (retryBtn) retryBtn.classList.remove('hidden');
+
+        document.getElementById('printer-list-container').innerHTML = `
+            <div style="background: white; padding: 20px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; box-sizing: border-box; border: 1px dashed #ef4444; color: #ef4444;">
+                <p style="margin: 0; font-weight: bold;">Agente desconectado</p>
+                <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Verifique que el agente se esté ejecutando.</p>
+            </div>
+        `;
         limpiarSelectImpresoras();
+        mostrarPlaceholderError();
 
         const bridgeContainer = document.getElementById('bridge-config-container');
         if (bridgeContainer) {
