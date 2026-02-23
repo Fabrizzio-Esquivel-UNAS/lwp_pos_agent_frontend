@@ -19,7 +19,7 @@ export async function listarImpresoras() {
     }
 
     container.innerHTML = `
-        <div style="background: white; padding: 20px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; color: #64748b;">
+        <div class="centered-placeholder" style="border: 1px solid #cbd5e1; color: #64748b;">
             <p style="margin: 0; font-weight: bold;">⏳ Buscando impresoras...</p>
             <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Por favor espere.</p>
         </div>`;
@@ -64,7 +64,7 @@ export async function listarImpresoras() {
 
         if (printers.length === 0) {
             container.innerHTML = `
-                <div style="background: white; padding: 20px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; color: #64748b;">
+                <div class="centered-placeholder" style="border: 1px solid #cbd5e1; color: #64748b;">
                     <p style="margin: 0; font-weight: bold;">No hay impresoras configuradas</p>
                     <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Agregue una manualmente o escanie la red.</p>
                 </div>`;
@@ -72,7 +72,7 @@ export async function listarImpresoras() {
     } catch (e) {
         log("Error de red al listar impresoras", 'error');
         container.innerHTML = `
-            <div style="background: white; padding: 20px; border-radius: 4px; display: inline-block; border: 1px dashed #ef4444; color: #ef4444; margin: auto;">
+            <div class="centered-placeholder" style="border: 1px dashed #ef4444; color: #ef4444;">
                 <p style="margin: 0; font-weight: bold;">Error de conexión</p>
                 <p style="margin: 5px 0 0 0; font-size: 0.8rem;">${e.message}</p>
             </div>`;
@@ -90,7 +90,7 @@ function renderPrinterList(printers) {
 
     if (printers.length === 0) {
         container.innerHTML = `
-            <div style="background: white; padding: 20px; border-radius: 4px; display: inline-block; border: 1px solid #cbd5e1; color: #64748b; margin: auto;">
+            <div class="centered-placeholder" style="border: 1px solid #cbd5e1; color: #64748b;">
                 <p style="margin: 0; font-weight: bold;">No hay impresoras configuradas</p>
                 <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Agregue una manualmente o escanie la red.</p>
             </div>`;

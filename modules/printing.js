@@ -132,9 +132,11 @@ export async function generarVistaPrevia() {
             mostrarPrevisualizacion(data.previewBase64);
         } else {
             log(`Error Vista Previa: ${data.message}`, 'error');
+            mostrarPlaceholderError();
         }
     } catch (e) {
         log(`Excepción preview: ${e.message}`, 'error');
+        mostrarPlaceholderError();
     } finally {
         if (btnRefresh) {
             btnRefresh.disabled = false;
@@ -150,9 +152,9 @@ function mostrarPrevisualizacion(base64) {
     container.classList.remove('hidden');
 
     placeholder.innerHTML = `
-        <div style="background: white; padding: 10px; border-radius: 4px; display: inline-block;">
+        <div class="centered-placeholder" style="border: none;">
             <img src="data:image/png;base64,${base64}" alt="Vista Previa" 
-                 style="max-width:100%; border:1px solid #ccc; min-height: 50px; display: block;">
+                 style="max-width:100%; border:1px solid #ccc; min-height: 50px;">
         </div>
     `;
 }
@@ -164,7 +166,7 @@ export function mostrarPlaceholderError() {
     if (container && placeholder) {
         container.classList.remove('hidden');
         placeholder.innerHTML = `
-            <div style="background: white; padding: 20px; border-radius: 4px; display: inline-block; border: 1px dashed #ef4444; color: #ef4444;">
+            <div class="centered-placeholder" style="border: 1px dashed #ef4444; color: #ef4444;">
                 <p style="margin: 0; font-weight: bold;">Vista previa no disponible</p>
                 <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Conecte el agente para ver la vista previa.</p>
             </div>
@@ -179,7 +181,7 @@ export function mostrarPlaceholderCargando() {
     if (container && placeholder) {
         container.classList.remove('hidden');
         placeholder.innerHTML = `
-            <div style="background: white; padding: 20px; border-radius: 4px; display: inline-block; border: 1px solid #cbd5e1; color: #64748b;">
+            <div class="centered-placeholder" style="border: 1px solid #cbd5e1; color: #64748b;">
                 <p style="margin: 0; font-weight: bold;">⏳ Cargando vista previa...</p>
                 <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Por favor espere.</p>
             </div>
