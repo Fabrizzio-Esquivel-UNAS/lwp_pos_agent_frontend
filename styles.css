@@ -40,6 +40,18 @@ body {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .config-section {
+        padding: 1rem;
+    }
+
     .main-content-grid {
         grid-template-columns: 1fr;
     }
